@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Study Notes</title>
+
+  <style>
+    * { box-sizing: border-box; font-family: "Segoe UI", system-ui, sans-serif; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #1e293b, #020617);
+      color: #e5e7eb;
+      padding: 16px;
+    }
+
+    h1 { text-align: center; font-size: 22px; margin-bottom: 12px; }
+
+    .card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(14px);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    input, textarea {
+      width: 100%;
+      background: #020617;
+      color: #e5e7eb;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 10px;
+      margin-top: 8px;
+      font-size: 14px;
+    }
+
+    textarea { height: 120px; resize: none; }
+
+    button {
+      margin-top: 10px;
+      padding: 6px 12px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .add { background: #22c55e; color: #022c22; }
+    .save { background: #6366f1; color: white; }
+    .delete { background: #ef4444; color: white; }
+    .edit { background: #facc15; color: #422006; }
+    .back { background: #334155; color: #e5e7eb; }
+
+    ul { padding-left: 18px; }
+    li { margin: 6px 0; cursor: pointer; }
+
+    .hidden { display: none; }
+
+    .note-box {
+      background: #020617;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 10px;
+      margin-top: 10px;
+    }
+
+    .note-time { font-size: 11px; color: #94a3b8; margin-bottom: 6px; }
+    .note-text { font-size: 14px; margin-bottom: 8px; }
+
+    .note-actions {
+      display: flex;
+      gap: 8px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>📚 My Notes</h1>
+
+<!-- ADD SUBJECT -->
+<div class="card">
+  <input id="subjectInput" placeholder="Add subject (Physics, Maths…)" />
+  <button class="add" onclick="addSubject()">Add Subject</button>
+</div>
+
+<!-- SUBJECT LIST -->
+<div class="card">
+  <ul id="subjectList"></ul>
+</div>
+
+<!-- NOTES -->
+<div class="card hidden" id="notesSection">
+  <h2 id="activeSubject"></h2>
+  <button class="delete" onclick="deleteSubject()">Delete Subject</button>
+
+  <textarea id="noteInput" placeholder="Write your notes here…"></textarea>
+  <button class="save" onclick="saveNote()">Save Note</button>
+
+  <div id="notesList"></div>
+</div>
+
+<button class="back" onclick="location.href='index.html'">⬅ Back</button>
+
+<script>
+  let data = JSON.parse(localStorage.getItem("subjectNotes")) || {};
+  let currentSubject = "";
+  let editIndex = null;
+
+  function saveData() {
+    localStorage.setItem("subjectNotes", JSON.stringify(data));
+  }
+
+  function addSubject() {
+    const name = subjectInput.value.trim();
+    if (!name || data[name]) return;
+    data[name] = [];
+    subjectInput.value = "";
+    saveData();
+    renderSubjects();
+  }
+
+  function renderSubjects() {
+    subjectList.innerHTML = "";
+    Object.keys(data).forEach(sub => {
+      const li = document.createElement("li");
+      li.textContent = "📘 " + sub;
+      li.onclick = () => openSubject(sub);
+      subjectList.appendChild(li);
+    });
+  }
+
+  function openSubject(sub) {
+    currentSubject = sub;
+    editIndex = null;
+    notesSection.classList.remove("hidden");
+    activeSubject.textContent = sub;
+    noteInput.value = "";
+    renderNotes();
+  }
+
+  function saveNote() {
+    const text = noteInput.value.trim();
+    if (!text) return;
+
+    if (editIndex !== null) {
+      data[currentSubject][editIndex].text = text;
+      editIndex = null;
+    } else {
+      data[currentSubject].push({
+        text,
+        time: new Date().toLocaleString()
+      });
+    }
+
+    noteInput.value = "";
+    saveData();
+    renderNotes();
+  }
+
+  function editNote(index) {
+    noteInput.value = data[currentSubject][index].text;
+    editIndex = index;
+  }
+
+  function deleteNote(index) {
+    data[currentSubject].splice(index, 1);
+    saveData();
+    renderNotes();
+  }
+
+  function deleteSubject() {
+    if (!confirm("Delete entire subject?")) return;
+    delete data[currentSubject];
+    currentSubject = "";
+    notesSection.classList.add("hidden");
+    saveData();
+    renderSubjects();
+  }
+
+  function renderNotes() {
+    notesList.innerHTML = "";
+    data[currentSubject].forEach((note, index) => {
+      const box = document.createElement("div");
+      box.className = "note-box";
+
+      box.innerHTML = `
+        <div class="note-time">🕒 ${note.time}</div>
+        <div class="note-text">${note.text}</div>
+        <div class="note-actions">
+          <button class="edit" onclick="editNote(${index})">Edit</button>
+          <button class="delete" onclick="deleteNote(${index})">Delete</button>
+        </div>
+      `;
+
+      notesList.appendChild(box);
+    });
+  }
+
+  renderSubjects();
+</script>
+
+</body>
+</html>

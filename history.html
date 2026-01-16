@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study History</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #1e293b, #020617);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e5e7eb;
+    }
+
+    .card {
+      width: 360px;
+      padding: 24px;
+      border-radius: 20px;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(14px);
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.05),
+        0 25px 60px rgba(0,0,0,0.7);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #94a3b8;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .history-item {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .label {
+      color: #e5e7eb;
+    }
+
+    .count {
+      color: #a5b4fc;
+      font-weight: 600;
+    }
+
+    .empty {
+      text-align: center;
+      font-size: 14px;
+      color: #94a3b8;
+      margin-top: 30px;
+    }
+
+    .back-btn {
+      margin-top: 16px;
+      width: 100%;
+      padding: 10px;
+      border-radius: 12px;
+      border: none;
+      background: #334155;
+      color: #e5e7eb;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+  <h1>📊 Study History</h1>
+  <div class="subtitle">Your study proof — day by day</div>
+
+  <div id="historyList"></div>
+
+  <button class="back-btn" onclick="window.location.href='index.html'">
+    ← Back to Home
+  </button>
+</div>
+
+<script>
+  function getToday() {
+    return new Date().toISOString().split("T")[0];
+  }
+
+  function formatLabel(dateStr) {
+    const today = new Date(getToday());
+    const d = new Date(dateStr);
+    const diff = Math.floor((today - d) / (1000 * 60 * 60 * 24));
+
+    if (diff === 0) return "Today";
+    if (diff === 1) return "Yesterday";
+    if (diff < 7) return d.toLocaleDateString(undefined, { weekday: "long" });
+
+    return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  }
+
+  const historyData =
+    JSON.parse(localStorage.getItem("studyHistory")) || {};
+
+  const historyList = document.getElementById("historyList");
+  const dates = Object.keys(historyData).sort((a, b) => b.localeCompare(a));
+
+  if (dates.length === 0) {
+    historyList.innerHTML =
+      '<div class="empty">No study history yet.<br>Start your first session.</div>';
+  } else {
+    dates.forEach(date => {
+      const div = document.createElement("div");
+      div.className = "history-item";
+
+      div.innerHTML = `
+        <span class="label">${formatLabel(date)}</span>
+        <span class="count">${historyData[date]} sessions</span>
+      `;
+
+      historyList.appendChild(div);
+    });
+  }
+</script>
+
+</body>
+</html>

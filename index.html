@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study Streak</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- ✅ GOOGLE ANALYTICS (DO NOT TOUCH) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D7J2BNQYDN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-D7J2BNQYDN');
+  </script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #1e293b, #020617);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e5e7eb;
+    }
+
+    .card {
+      width: 340px;
+      padding: 32px 28px;
+      border-radius: 20px;
+      text-align: center;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(14px);
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.05),
+        0 25px 60px rgba(0,0,0,0.7);
+    }
+
+    h1 { font-size: 26px; }
+    .subtitle { font-size: 14px; color: #94a3b8; margin: 6px 0 22px; }
+    .timer { font-size: 52px; font-weight: 700; margin-bottom: 22px; }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    button {
+      padding: 10px 18px;
+      border-radius: 12px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .start { background: linear-gradient(135deg, #22c55e, #16a34a); }
+    .pause { background: linear-gradient(135deg, #fde047, #facc15); }
+    .reset { background: linear-gradient(135deg, #f87171, #ef4444); }
+
+    .status { font-size: 14px; margin-top: 6px; }
+    .streak { margin-top: 12px; font-size: 14px; }
+
+    .open-notes {
+      margin-top: 14px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      background: #334155;
+      color: #e5e7eb;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+  <h1>Study Streak</h1>
+  <div class="subtitle">25 minutes. No excuses.</div>
+
+  <div class="timer" id="timer">25:00</div>
+
+  <div class="buttons">
+    <button class="start" id="startBtn">Start</button>
+    <button class="pause" id="pauseBtn">Pause</button>
+    <button class="reset" id="resetBtn">Reset</button>
+  </div>
+
+  <div class="status" id="status">Not started</div>
+  <div class="streak" id="streak">🔥 Streak: 0</div>
+
+  <button class="open-notes" id="openNotesBtn">📝 Notes</button>
+</div>
+
+<script>
+  let totalSeconds = 25 * 60;
+  let interval = null;
+  let running = false;
+
+  let streak = Number(localStorage.getItem("streak")) || 0;
+  let lastStudyDate = localStorage.getItem("lastStudyDate");
+
+  const timerEl = document.getElementById("timer");
+  const statusEl = document.getElementById("status");
+  const streakEl = document.getElementById("streak");
+
+  streakEl.textContent = "🔥 Streak: " + streak;
+
+  function getToday() {
+    return new Date().toISOString().split("T")[0];
+  }
+
+  function updateTimer() {
+    const m = Math.floor(totalSeconds / 60);
+    const s = totalSeconds % 60;
+    timerEl.textContent = String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+  }
+
+  document.getElementById("startBtn").onclick = () => {
+    if (running) return;
+    running = true;
+    statusEl.textContent = "Studying… Focus 🔥";
+
+    interval = setInterval(() => {
+      totalSeconds--;
+      updateTimer();
+
+      if (totalSeconds <= 0) {
+        clearInterval(interval);
+        running = false;
+
+        const today = getToday();
+        let message = "✅ Session done for today.";
+
+        if (!lastStudyDate) {
+          streak = 1;
+          message = "🔥 First streak started!";
+        } else if (today !== lastStudyDate) {
+          const diff =
+            (new Date(today) - new Date(lastStudyDate)) /
+            (1000 * 60 * 60 * 24);
+
+          if (diff === 1) {
+            streak++;
+            message = "🔥 Streak +1! Keep it alive.";
+          } else {
+            streak = 1;
+            message = "⚠️ You missed a day. New streak started.";
+          }
+        }
+
+        lastStudyDate = today;
+        localStorage.setItem("streak", streak);
+        localStorage.setItem("lastStudyDate", today);
+
+        streakEl.textContent = "🔥 Streak: " + streak;
+        statusEl.textContent = message;
+
+        totalSeconds = 25 * 60;
+        updateTimer();
+      }
+    }, 1000);
+  };
+
+  document.getElementById("pauseBtn").onclick = () => {
+    clearInterval(interval);
+    running = false;
+    statusEl.textContent = "Paused ⏸️";
+  };
+
+  document.getElementById("resetBtn").onclick = () => {
+    clearInterval(interval);
+    running = false;
+    totalSeconds = 25 * 60;
+    updateTimer();
+    statusEl.textContent = "Reset. Ready again.";
+  };
+
+  document.getElementById("openNotesBtn").onclick = () => {
+    window.location.href = "notes.html";
+  };
+
+  updateTimer();
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js");
+  }
+</script>
+
+</body>
+</html>
