@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Proof</title>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<style>
+body {
+  background:#020617;
+  color:#e5e7eb;
+  font-family:Segoe UI, system-ui, sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+}
+
+.wrapper {
+  text-align:center;
+}
+
+.card {
+  background:#0f172a;
+  padding:24px;
+  border-radius:16px;
+  width:280px;
+}
+
+h3 {
+  margin-bottom:12px;
+}
+
+p {
+  margin:6px 0;
+}
+
+button {
+  margin-top:14px;
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  background:#22c55e;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.status {
+  margin-top:10px;
+  font-size:13px;
+  color:#94a3b8;
+  display:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+  <div class="card" id="proof">
+    <h3>📚 Study Proof</h3>
+    <p>Name: <b id="name"></b></p>
+    <p>Date: <b id="date"></b></p>
+    <p>Sessions Today: <b id="sessions"></b></p>
+  </div>
+
+  <button id="shareBtn">Save / Share</button>
+  <div class="status" id="status">Generating proof…</div>
+</div>
+
+<script src="env.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+try{ if(!firebase.apps.length){ firebase.initializeApp(window.__FIREBASE_CONFIG); } }catch(e){}
+function getUserName(){
+  let n = localStorage.getItem('userName');
+  if(!n){ n = 'Anonymous'; localStorage.setItem('userName', n); }
+  return n;
+}
+function totalSessions(){
+  const hist = JSON.parse(localStorage.getItem('studyHistory'))||{};
+  return Object.values(hist).reduce((a,b)=>a+Number(b||0),0);
+}
+function consistencyLevel(){
+  const streak = (JSON.parse(localStorage.getItem('studyStreak'))||{streak:0}).streak||0;
+  if(streak>=10) return 'Strong';
+  if(streak>=4) return 'Stable';
+  return 'Growing';
+}
+document.getElementById("name").textContent = getUserName();
+document.getElementById("date").textContent = new Date().toLocaleDateString();
+document.getElementById("sessions").textContent = localStorage.getItem("todaySessions") || 0;
+
+const extra = document.createElement('div');
+extra.innerHTML = `<p>Total Sessions: <b>${totalSessions()}</b></p><p>Consistency: <b>${consistencyLevel()}</b></p>`;
+document.getElementById('proof').appendChild(extra);
+
+const status = document.getElementById("status");
+const btn = document.getElementById("shareBtn");
+btn.addEventListener("click", async () => {
+  status.style.display = "block";
+  status.textContent = "Generating proof…";
+  const canvas = await html2canvas(document.getElementById("proof"));
+  const blob = await new Promise(res => canvas.toBlob(res));
+  status.style.display = "none";
+  if (navigator.share) {
+    const file = new File([blob], "study-proof.png", { type: "image/png" });
+    try { await navigator.share({ title: "My Study Proof", files: [file] }); return; } catch (e) {}
+  }
+  const link = document.createElement("a");
+  link.href = canvas.toDataURL();
+  link.download = "study-proof.png";
+  link.click();
+});
+</script>
+
+</body>
+</html>

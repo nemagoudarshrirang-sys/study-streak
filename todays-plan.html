@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Today’s Plan</title>
+<style>
+body{min-height:100vh;background:radial-gradient(circle at top, #0f172a, #020617);display:flex;align-items:center;justify-content:center;color:#e5e7eb;font-family:Segoe UI,system-ui;line-height:1.6}
+.card{width:360px;background:rgba(15,23,42,0.85);padding:32px 28px;border-radius:24px;box-shadow:0 0 0 1px rgba(255,255,255,0.06),0 25px 60px rgba(0,0,0,0.6);backdrop-filter:blur(16px)}
+h2{font-size:24px;margin-bottom:12px;text-align:center;font-weight:700;letter-spacing:-0.5px}
+.row{display:flex;gap:10px;justify-content:center;margin:12px 0;flex-wrap:wrap}
+.mini-btn{padding:10px 16px;border:none;border-radius:14px;background:rgba(51,65,85,0.8);color:#e5e7eb;cursor:pointer;font-size:13px;font-weight:500;transition:all 0.2s ease}
+.mini-btn:hover{background:rgba(51,65,85,1);transform:translateY(-1px)}
+.mini-btn.on{background:#22c55e;color:#0b1a12;box-shadow:0 2px 8px rgba(34,197,94,0.3)}
+.input-soft{width:100%;padding:12px 14px;border:none;border-radius:14px;background:rgba(11,18,32,0.8);color:#e5e7eb;font-size:14px;transition:background 0.2s ease}
+.input-soft:focus{outline:none;background:rgba(11,18,32,1)}
+.sub{font-size:13px;color:#94a3b8;text-align:center;line-height:1.5;margin-top:8px}
+.list{margin-top:10px}
+.back{width:100%;margin-top:16px;padding:14px;border:none;border-radius:14px;background:rgba(51,65,85,0.8);color:#e5e7eb;font-weight:500;cursor:pointer;transition:all 0.2s ease}
+.back:hover{background:rgba(51,65,85,1);transform:translateY(-1px)}
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>Today’s Plan</h2>
+  <div class="row"><input id="newSubjectName" class="input-soft" placeholder="Subject name" /></div>
+  <div class="row">
+    <input id="newSubjectMinutes" class="input-soft" type="number" min="5" max="240" placeholder="Target minutes" />
+    <button class="mini-btn" id="addSubjectBtn">Add</button>
+    <button class="mini-btn" id="autoPlanToggle">Auto</button>
+  </div>
+  <div class="sub" id="planStatus"></div>
+  <div id="subjectsList" class="list"></div>
+  <div class="row"><select id="subjectSelect" class="input-soft"></select></div>
+  <button class="back" onclick="location.href='index.html'">← Back</button>
+</div>
+
+<script src="env.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+try{ if(!firebase.apps.length){ firebase.initializeApp(window.__FIREBASE_CONFIG); } }catch(e){}
+window.fdb = firebase.firestore();
+</script>
+<script src="script.js"></script>
+</body>
+</html>

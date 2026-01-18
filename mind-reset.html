@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mind Reset</title>
+<style>
+body{min-height:100vh;background:#020617;display:flex;align-items:center;justify-content:center;color:#e5e7eb;font-family:Segoe UI,system-ui}
+.card{width:320px;background:#0f172a;padding:22px;border-radius:20px;box-shadow:0 0 0 1px rgba(255,255,255,0.06);text-align:center}
+h2{font-size:22px;margin-bottom:6px}
+.sub{font-size:13px;color:#94a3b8;margin-bottom:14px}
+.status{font-size:18px;margin:10px 0}
+.count{font-size:32px;font-weight:700}
+button{width:100%;padding:12px;border:none;border-radius:14px;background:#22c55e;color:#0b1a12;font-weight:600;cursor:pointer}
+.back{margin-top:10px;background:#334155;color:#e5e7eb}
+.calm{filter:brightness(0.9) saturate(0.9)}
+.gentle{font-size:13px;color:#94a3b8;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>🌬 Mind Reset</h2>
+  <div class="sub">Gentle 4–4–4 breathing guide</div>
+  <div class="status" id="status">Ready</div>
+  <div class="count" id="count">0</div>
+  <div class="gentle">Breathe in… Hold… Breathe out…</div>
+  <button id="start">Start Reset</button>
+  <button class="back" onclick="window.location.href='focus.html'">I feel calmer now</button>
+  <button class="back" onclick="window.location.href='focus.html'">← Back</button>
+</div>
+<script src="env.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+try{ if(!firebase.apps.length){ firebase.initializeApp(window.__FIREBASE_CONFIG); } }catch(e){}
+if(localStorage.getItem('calmMode')==='on') document.body.classList.add('calm');
+const status = document.getElementById('status');
+const count = document.getElementById('count');
+const btn = document.getElementById('start');
+let running = false;
+function step(label){
+  return new Promise(resolve=>{
+    status.textContent = label;
+    let n = 4; count.textContent = n;
+    const t = setInterval(()=>{
+      n--; count.textContent = n;
+      if(n<=0){ clearInterval(t); resolve(); }
+    },1000);
+  });
+}
+btn.onclick = async ()=>{
+  if(running) return; running = true;
+  for(let i=0;i<5;i++){
+    await step('Inhale');
+    await step('Hold');
+    await step('Exhale');
+  }
+  status.textContent = 'Complete';
+  count.textContent = '0';
+  running = false;
+};
+</script>
+</body>
+</html>
