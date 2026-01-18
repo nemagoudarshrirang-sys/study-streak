@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Focus Settings</title>
+<style>
+body{min-height:100vh;background:radial-gradient(circle at top, #0f172a, #020617);display:flex;align-items:center;justify-content:center;color:#e5e7eb;font-family:Segoe UI,system-ui;line-height:1.6}
+.card{width:360px;background:rgba(26,26,26,0.85);padding:28px 24px;border-radius:24px;box-shadow:0 0 0 1px rgba(255,255,255,0.06),0 20px 40px rgba(0,0,0,0.4);backdrop-filter:blur(16px)}
+h2{font-size:24px;margin-bottom:8px;font-weight:700;letter-spacing:-0.5px}
+.sub{font-size:13px;color:#94a3b8;margin-bottom:16px;line-height:1.5}
+.row{background:rgba(18,18,18,0.8);border-radius:16px;padding:14px 16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s ease;backdrop-filter:blur(8px)}
+.row:hover{background:rgba(18,18,18,1);transform:translateY(-1px)}
+.muted{font-size:12px;color:#94a3b8;line-height:1.5}
+.back{width:100%;margin-top:16px;padding:14px;border:none;border-radius:14px;background:rgba(51,65,85,0.8);color:#e5e7eb;font-weight:500;cursor:pointer;transition:all 0.2s ease}
+.back:hover{background:rgba(51,65,85,1);transform:translateY(-1px)}
+.toggle{appearance:none;width:42px;height:24px;border-radius:24px;background:#334155;position:relative;cursor:pointer}
+.toggle:checked{background:#22c55e}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#0b1a12;transition:left .15s}
+.toggle:checked::after{left:21px}
+.calm{filter:brightness(0.9) saturate(0.9)}
+.field{background:rgba(18,18,18,0.8);border-radius:16px;padding:16px;margin-bottom:12px;backdrop-filter:blur(8px)}
+.field input{width:100%;padding:12px 14px;border:none;border-radius:14px;background:rgba(11,18,32,0.8);color:#e5e7eb;font-size:14px;transition:background 0.2s ease}
+.field input:focus{outline:none;background:rgba(11,18,32,1)}
+.choices{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+.choices button{padding:10px 16px;border:none;border-radius:14px;background:rgba(51,65,85,0.8);color:#e5e7eb;cursor:pointer;font-size:13px;font-weight:500;transition:all 0.2s ease}
+.choices button:hover{background:rgba(51,65,85,1);transform:translateY(-1px)}
+.choices .on{background:#22c55e;color:#0b1a12;box-shadow:0 2px 8px rgba(34,197,94,0.3)}
+.section{background:rgba(18,18,18,0.8);border-radius:16px;padding:16px;margin-top:16px;backdrop-filter:blur(8px)}
+.section-title{font-size:12px;color:#94a3b8;margin-bottom:12px;letter-spacing:.5px;text-transform:uppercase;font-weight:500}
+.item{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:14px;background:rgba(15,15,15,0.6);margin-bottom:10px;transition:all 0.2s ease}
+.item:hover{background:rgba(15,15,15,0.8);transform:translateY(-1px)}
+.left{display:flex;align-items:center;gap:12px}
+.ic{width:32px;height:32px;border-radius:10px;background:rgba(31,31,31,0.8);display:flex;align-items:center;justify-content:center;font-size:16px}
+.arrow{font-size:16px;color:#94a3b8;margin-left:8px;opacity:0.7}
+.btn{padding:10px 16px;border:none;border-radius:12px;background:rgba(51,65,85,0.8);color:#e5e7eb;cursor:pointer;font-size:13px;font-weight:500;transition:all 0.2s ease}
+.btn:hover{background:rgba(51,65,85,1);transform:translateY(-1px)}
+.ok{color:#9ff7c5}
+.contrast{filter:contrast(1.1)}
+.reduced *{transition:none !important;animation:none !important}
+.bottom-nav{position:fixed;left:0;right:0;bottom:0;height:64px;background:rgba(17,17,17,0.95);border-top:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-around;z-index:50;backdrop-filter:blur(12px)}
+.bn-btn{background:transparent;border:none;color:#e5e7eb;font-size:20px;cursor:pointer;opacity:0.85;transition:opacity 0.2s ease, transform 0.15s ease;padding:8px}
+.bn-btn:hover{opacity:1;transform:scale(1.1)}
+.bn-btn.active{color:#22c55e;opacity:1}
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>⚙ Focus Settings</h2>
+  <div class="sub">Gentle controls for a calm experience</div>
+
+  <div class="section">
+    <div class="section-title">Study Settings</div>
+    <div class="item"><div class="left"><div class="ic">⏱</div><span>Adaptive focus duration</span></div><input id="adaptiveFocus" type="checkbox" class="toggle" /></div>
+    <div class="item"><div class="left"><div class="ic">🌱</div><span>Auto-start focus room</span></div><input id="autoFocus" type="checkbox" class="toggle" /></div>
+    <div class="field">
+      <div>Daily intention</div>
+      <div class="muted">Shown at top of Focus Hub</div>
+      <input id="intentionInput" placeholder="What is today’s main intention?" />
+    </div>
+    <div class="field">
+      <div>Mood before study</div>
+      <div class="muted">Select current mood</div>
+      <div class="choices">
+        <button id="mCalm">😌 Calm</button>
+        <button id="mNeutral">😐 Neutral</button>
+        <button id="mStressed">😣 Stressed</button>
+      </div>
+    </div>
+    <div class="field">
+      <div>Focus duration (minutes)</div>
+      <div class="muted">Adjust freely</div>
+      <input id="sessionLength" type="number" min="5" max="120" placeholder="e.g., 25" />
+      <div class="choices" style="margin-top:8px">
+        <button class="preset" data-min="15">15</button>
+        <button class="preset" data-min="20">20</button>
+        <button class="preset" data-min="25">25</button>
+        <button class="preset" data-min="30">30</button>
+        <button class="preset" data-min="35">35</button>
+        <button class="preset" data-min="40">40</button>
+      </div>
+    </div>
+    <div class="item"><span>Focus reminder</span><input id="focusReminder" type="checkbox" class="toggle" /></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Progress & Reflection</div>
+    <div class="item"><div class="left"><div class="ic">🧾</div><span>Study proof</span></div><div><button class="btn" onclick="location.href='proof.html'">Open</button><span class="arrow">›</span></div></div>
+    <div class="item"><div class="left"><div class="ic">📊</div><span>Today summary</span></div><div><button class="btn" onclick="location.href='history.html'">View</button><span class="arrow">›</span></div></div>
+    <div class="item"><div class="left"><div class="ic">🔥</div><span>Streak progress</span></div><span class="muted">Shown on Home</span></div>
+    <div class="item"><div class="left"><div class="ic">📝</div><span>Session notes</span></div><div><button class="btn" onclick="location.href='notes.html'">Open</button><span class="arrow">›</span></div></div>
+    <div class="field">
+      <div>End-of-day reflection</div>
+      <div class="muted">Optional · No guilt</div>
+      <input id="dailyReflection" placeholder="One line reflection" />
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Visual & Calm</div>
+    <div class="item"><div class="left"><div class="ic">🌿</div><span>Calm visual mode</span></div><input id="calmMode" type="checkbox" class="toggle" /></div>
+    <div class="item"><div class="left"><div class="ic">◐</div><span>Low contrast mode</span></div><input id="accContrast" type="checkbox" class="toggle" /></div>
+    <div class="item"><div class="left"><div class="ic">⚡</div><span>Reduced motion</span></div><input id="accReduceMotion" type="checkbox" class="toggle" /></div>
+    <div class="field">
+      <div>Font size</div>
+      <div class="muted">Adjust text size for comfort</div>
+      <div class="choices">
+        <button id="fontSmall" class="font-choice">Small</button>
+        <button id="fontMedium" class="font-choice">Medium</button>
+        <button id="fontLarge" class="font-choice">Large</button>
+      </div>
+    </div>
+    <div class="field">
+      <div>Line spacing</div>
+      <div class="muted">Adjust line height for reading</div>
+      <div class="choices">
+        <button id="lineTight" class="line-choice">Tight</button>
+        <button id="lineComfortable" class="line-choice">Comfortable</button>
+        <button id="lineSpacious" class="line-choice">Spacious</button>
+      </div>
+    </div>
+    <div class="field">
+      <div>Theme variation</div>
+      <div class="muted">Choose a calm color theme</div>
+      <div class="choices">
+        <button id="themeSoft" class="theme-choice">Soft Dark</button>
+        <button id="themeBlue" class="theme-choice">Blue Dark</button>
+        <button id="themeWarm" class="theme-choice">Warm Dark</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Sound & Feedback</div>
+    <div class="item"><div class="left"><div class="ic">🔕</div><span>Notification silence</span></div><input id="notifySilence" type="checkbox" class="toggle" /></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Data & Safety</div>
+    <div class="item"><div class="left"><div class="ic">📦</div><span>Offline data</span></div><span class="muted">Local settings only</span></div>
+    <div class="item"><div class="left"><div class="ic">🗂</div><span>History controls</span></div><div><button class="btn" onclick="location.href='history.html'">Open</button><span class="arrow">›</span></div></div>
+    <div class="item"><div class="left"><div class="ic">🧹</div><span>Clear data</span></div><button class="btn" id="clearDataBtn">Clear</button></div>
+  </div>
+
+  <button class="back" onclick="window.location.href='focus.html'">← Back</button>
+  <div id="status" class="muted" style="margin-top:6px"></div>
+</div>
+<div class="bottom-nav">
+  <button class="bn-btn" onclick="location.href='index.html'">🏠</button>
+  <button class="bn-btn" onclick="location.href='group-inbox.html'">💬</button>
+  <button class="bn-btn" onclick="location.href='profile.html'">🙂</button>
+  <button class="bn-btn active" onclick="location.href='settings.html'">⚙️</button>
+</div>
+
+<script src="env.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+try{ if(!firebase.apps.length){ firebase.initializeApp(window.__FIREBASE_CONFIG); } }catch(e){}
+if(localStorage.getItem('calmMode')==='on') document.body.classList.add('calm');
+if(localStorage.getItem('calmMode')===null){ localStorage.setItem('calmMode','on'); }
+const adaptive = document.getElementById('adaptiveFocus');
+const auto = document.getElementById('autoFocus');
+const calm = document.getElementById('calmMode');
+const status = document.getElementById('status');
+const intentionInput = document.getElementById('intentionInput');
+const mCalm = document.getElementById('mCalm');
+const mNeutral = document.getElementById('mNeutral');
+const mStressed = document.getElementById('mStressed');
+const focusReminder = document.getElementById('focusReminder');
+const sessionLength = document.getElementById('sessionLength');
+const notifySilence = document.getElementById('notifySilence');
+adaptive.checked = (localStorage.getItem('adaptiveFocus')||'on')==='on';
+auto.checked = (localStorage.getItem('autoFocusRoom')||'on')==='on';
+calm.checked = localStorage.getItem('calmMode')==='on';
+intentionInput.value = localStorage.getItem('dailyIntention')||'';
+const mood = localStorage.getItem('focusMood')||'Neutral';
+mCalm.className = mood==='Calm'?'on':'';
+mNeutral.className = mood==='Neutral'?'on':'';
+mStressed.className = mood==='Stressed'?'on':'';
+focusReminder.checked = (localStorage.getItem('focusReminder')||'off')==='on';
+sessionLength.value = localStorage.getItem('sessionLength')||'';
+notifySilence.checked = (localStorage.getItem('notifySilence')||'off')==='on';
+adaptive.onchange = ()=>{
+  localStorage.setItem('adaptiveFocus', adaptive.checked?'on':'off');
+  status.textContent = 'Saved'; setTimeout(()=>status.textContent='',1200);
+};
+auto.onchange = ()=>{
+  localStorage.setItem('autoFocusRoom', auto.checked?'on':'off');
+  status.textContent = 'Saved'; setTimeout(()=>status.textContent='',1200);
+};
+calm.onchange = ()=>{
+  localStorage.setItem('calmMode', calm.checked?'on':'off');
+  if(calm.checked) document.body.classList.add('calm'); else document.body.classList.remove('calm');
+  status.textContent = 'Saved'; setTimeout(()=>status.textContent='',1200);
+};
+intentionInput.onchange = ()=>{
+  localStorage.setItem('dailyIntention', intentionInput.value.trim());
+  status.textContent = 'Saved'; setTimeout(()=>status.textContent='',1200);
+};
+mCalm.onclick = ()=>{ localStorage.setItem('focusMood','Calm'); mCalm.className='on'; mNeutral.className=''; mStressed.className=''; status.textContent='Saved'; setTimeout(()=>status.textContent='',1200); };
+mNeutral.onclick = ()=>{ localStorage.setItem('focusMood','Neutral'); mCalm.className=''; mNeutral.className='on'; mStressed.className=''; status.textContent='Saved'; setTimeout(()=>status.textContent='',1200); };
+mStressed.onclick = ()=>{ localStorage.setItem('focusMood','Stressed'); mCalm.className=''; mNeutral.className=''; mStressed.className='on'; status.textContent='Saved'; setTimeout(()=>status.textContent='',1200); };
+focusReminder.onchange = ()=>{ localStorage.setItem('focusReminder', focusReminder.checked?'on':'off'); status.textContent='Saved'; setTimeout(()=>status.textContent='',1200); };
+function saveSessionLen(v){
+  localStorage.setItem('sessionLength', v);
+}
+sessionLength.onchange = ()=>{ const v = sessionLength.value.trim(); saveSessionLen(v); status.textContent='Saved'; setTimeout(()=>status.textContent='',1200); };
+notifySilence.onchange = ()=>{ localStorage.setItem('notifySilence', notifySilence.checked?'on':'off'); status.textContent='Saved'; setTimeout(()=>status.textContent='',1200); };
+document.querySelectorAll('.preset').forEach(btn=>{
+  btn.onclick = ()=>{ const v = btn.getAttribute('data-min'); sessionLength.value = v; saveSessionLen(v); status.textContent='Saved'; setTimeout(()=>status.textContent='',1200); };
+});
+// Account & Security removed for open mode
+document.getElementById('clearDataBtn').onclick = ()=>{
+  try{ localStorage.clear(); indexedDB.deleteDatabase('StudyNotesDB'); status.textContent='Local data cleared'; setTimeout(()=>status.textContent='',1500); }catch(e){ status.textContent='Unable to clear data'; setTimeout(()=>status.textContent='',1500); }
+};
+
+// Accessibility
+const accContrast = document.getElementById('accContrast');
+const accReduceMotion = document.getElementById('accReduceMotion');
+const accCalm = document.getElementById('accCalm');
+accContrast.checked = (localStorage.getItem('accContrast')||'off')==='on';
+accReduceMotion.checked = (localStorage.getItem('accReduceMotion')||'off')==='on';
+accCalm.checked = (localStorage.getItem('calmMode')||'on')==='on';
+function applyAccessibility(){
+  if(accContrast.checked) document.body.classList.add('contrast'); else document.body.classList.remove('contrast');
+  if(accReduceMotion.checked) document.body.classList.add('reduced'); else document.body.classList.remove('reduced');
+  if(accCalm.checked) document.body.classList.add('calm'); else document.body.classList.remove('calm');
+}
+applyAccessibility();
+accContrast.onchange = ()=>{ localStorage.setItem('accContrast', accContrast.checked?'on':'off'); applyAccessibility(); };
+accReduceMotion.onchange = ()=>{ localStorage.setItem('accReduceMotion', accReduceMotion.checked?'on':'off'); applyAccessibility(); };
+accCalm.onchange = ()=>{ localStorage.setItem('calmMode', accCalm.checked?'on':'off'); applyAccessibility(); };
+const dailyReflection = document.getElementById('dailyReflection');
+dailyReflection.value = localStorage.getItem('dailyReflection')||'';
+dailyReflection.onchange = ()=>{ localStorage.setItem('dailyReflection', dailyReflection.value.trim()); status.textContent='Saved'; setTimeout(()=>status.textContent='',1200); };
+
+// Font Size Control
+function applyFontSize(size){
+  const sizes = { small: '13px', medium: '14px', large: '16px' };
+  document.documentElement.style.setProperty('--font-size-base', sizes[size] || sizes.medium);
+  localStorage.setItem('fontSize', size);
+}
+const fontSize = localStorage.getItem('fontSize') || 'medium';
+applyFontSize(fontSize);
+document.getElementById('fontSmall').className = fontSize==='small' ? 'font-choice on' : 'font-choice';
+document.getElementById('fontMedium').className = fontSize==='medium' ? 'font-choice on' : 'font-choice';
+document.getElementById('fontLarge').className = fontSize==='large' ? 'font-choice on' : 'font-choice';
+document.getElementById('fontSmall').onclick = ()=>{ applyFontSize('small'); document.getElementById('fontSmall').className='font-choice on'; document.getElementById('fontMedium').className='font-choice'; document.getElementById('fontLarge').className='font-choice'; status.textContent='Saved'; setTimeout(()=>status.textContent='',1200); };
+document.getElementById('fontMedium').onclick = ()=>{ applyFontSize('medium'); document.getElementById('fontSmall').className='font-choice'; document.getElementById('fontMedium').className='font-choice on'; document.getElementById('fontLarge').className='font-choice'; status.textContent='Saved'; setTimeout(()=>status.textContent='',1200); };
+document.getElementById('fontLarge').onclick = ()=>{ applyFontSize('large'); document.getElementById('fontSmall').className='font-choice'; document.getElementById('fontMedium').className='font-choice'; document.getElementById('fontLarge').className='font-choice on'; status.textContent='Saved'; setTimeout(()=>status.textContent='',1200); };
+
+// Line Spacing Control
+function applyLineSpacing(spacing){
+  const spacings = { tight: '1.4', comfortable: '1.6', spacious: '1.8' };
+  document.documentElement.style.setProperty('--line-height-base', spacings[spacing] || spacings.comfortable);
+  localStorage.setItem('lineSpacing', spacing);
+}
+const lineSpacing = localStorage.getItem('lineSpacing') || 'comfortable';
+applyLineSpacing(lineSpacing);
+document.getElementById('lineTight').className = lineSpacing==='tight' ? 'line-choice on' : 'line-choice';
+document.getElementById('lineComfortable').className = lineSpacing==='comfortable' ? 'line-choice on' : 'line-choice';
+document.getElementById('lineSpacious').className = lineSpacing==='spacious' ? 'line-choice on' : 'line-choice';
+document.getElementById('lineTight').onclick = ()=>{ applyLineSpacing('tight'); document.getElementById('lineTight').className='line-choice on'; document.getElementById('lineComfortable').className='line-choice'; document.getElementById('lineSpacious').className='line-choice'; status.textContent='Saved'; setTimeout(()=>status.textContent='',1200); };
+document.getElementById('lineComfortable').onclick = ()=>{ applyLineSpacing('comfortable'); document.getElementById('lineTight').className='line-choice'; document.getElementById('lineComfortable').className='line-choice on'; document.getElementById('lineSpacious').className='line-choice'; status.textContent='Saved'; setTimeout(()=>status.textContent='',1200); };
+document.getElementById('lineSpacious').onclick = ()=>{ applyLineSpacing('spacious'); document.getElementById('lineTight').className='line-choice'; document.getElementById('lineComfortable').className='line-choice'; document.getElementById('lineSpacious').className='line-choice on'; status.textContent='Saved'; setTimeout(()=>status.textContent='',1200); };
+
+// Theme Variations
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('themeVariant', theme);
+  const root = document.documentElement;
+  if(theme==='blue-dark'){
+    root.style.setProperty('--bg-gradient-start', '#1e3a5f');
+    root.style.setProperty('--bg-gradient-end', '#0a1a2e');
+  }else if(theme==='warm-dark'){
+    root.style.setProperty('--bg-gradient-start', '#2d1b1b');
+    root.style.setProperty('--bg-gradient-end', '#1a0f0f');
+  }else{
+    root.style.setProperty('--bg-gradient-start', '#0f172a');
+    root.style.setProperty('--bg-gradient-end', '#020617');
+  }
+}
+const themeVariant = localStorage.getItem('themeVariant') || 'soft-dark';
+applyTheme(themeVariant);
+document.getElementById('themeSoft').className = themeVariant==='soft-dark' ? 'theme-choice on' : 'theme-choice';
+document.getElementById('themeBlue').className = themeVariant==='blue-dark' ? 'theme-choice on' : 'theme-choice';
+document.getElementById('themeWarm').className = themeVariant==='warm-dark' ? 'theme-choice on' : 'theme-choice';
+document.getElementById('themeSoft').onclick = ()=>{ applyTheme('soft-dark'); document.getElementById('themeSoft').className='theme-choice on'; document.getElementById('themeBlue').className='theme-choice'; document.getElementById('themeWarm').className='theme-choice'; status.textContent='Saved'; setTimeout(()=>status.textContent='',1200); };
+document.getElementById('themeBlue').onclick = ()=>{ applyTheme('blue-dark'); document.getElementById('themeSoft').className='theme-choice'; document.getElementById('themeBlue').className='theme-choice on'; document.getElementById('themeWarm').className='theme-choice'; status.textContent='Saved'; setTimeout(()=>status.textContent='',1200); };
+document.getElementById('themeWarm').onclick = ()=>{ applyTheme('warm-dark'); document.getElementById('themeSoft').className='theme-choice'; document.getElementById('themeBlue').className='theme-choice'; document.getElementById('themeWarm').className='theme-choice on'; status.textContent='Saved'; setTimeout(()=>status.textContent='',1200); };
+</script>
+</body>
+</html>

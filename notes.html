@@ -1,207 +1,361 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Study Notes</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Study Notes</title>
 
-  <style>
-    * { box-sizing: border-box; font-family: "Segoe UI", system-ui, sans-serif; }
+<style>
+:root {
+  --font-size-base: 14px;
+  --line-height-base: 1.6;
+  --theme-variant: 'soft-dark';
+}
+* { box-sizing: border-box; font-family: "Segoe UI", system-ui, sans-serif; font-size: var(--font-size-base); line-height: var(--line-height-base); }
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: radial-gradient(circle at top, #1e293b, #020617);
-      color: #e5e7eb;
-      padding: 16px;
-    }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #1e293b, #020617);
+  color: #e5e7eb;
+  padding: 20px 16px;
+  line-height: 1.6;
+}
 
-    h1 { text-align: center; font-size: 22px; margin-bottom: 12px; }
+h1 { text-align: center; font-size: 24px; margin-bottom: 16px; font-weight: 700; letter-spacing: -0.5px; }
 
-    .card {
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(14px);
-      border-radius: 16px;
-      padding: 14px;
-      margin-bottom: 14px;
-    }
+.card {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(16px);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 20px 40px rgba(0,0,0,0.4);
+}
 
-    input, textarea {
-      width: 100%;
-      background: #020617;
-      color: #e5e7eb;
-      border: 1px solid #334155;
-      border-radius: 10px;
-      padding: 10px;
-      margin-top: 8px;
-      font-size: 14px;
-    }
+input, textarea {
+  width: 100%;
+  background: rgba(2,6,23,0.8);
+  color: #e5e7eb;
+  border: 1px solid rgba(51,65,85,0.5);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-top: 10px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
 
-    textarea { height: 120px; resize: none; }
+input:focus, textarea:focus {
+  outline: none;
+  border-color: rgba(51,65,85,0.8);
+  background: rgba(2,6,23,1);
+}
 
-    button {
-      margin-top: 10px;
-      padding: 6px 12px;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 13px;
-    }
+textarea { height: 120px; resize: none; line-height: 1.6; }
 
-    .add { background: #22c55e; color: #022c22; }
-    .save { background: #6366f1; color: white; }
-    .delete { background: #ef4444; color: white; }
-    .edit { background: #facc15; color: #422006; }
-    .back { background: #334155; color: #e5e7eb; }
+button {
+  margin-top: 12px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
 
-    ul { padding-left: 18px; }
-    li { margin: 6px 0; cursor: pointer; }
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
 
-    .hidden { display: none; }
+.add { background: #22c55e; color: #022c22; }
+.add:hover { box-shadow: 0 4px 16px rgba(34,197,94,0.4); }
+.save { background: #6366f1; color: white; }
+.save:hover { box-shadow: 0 4px 16px rgba(99,102,241,0.4); }
+.delete { background: #ef4444; color: white; }
+.delete:hover { box-shadow: 0 4px 16px rgba(239,68,68,0.4); }
+.edit { background: #facc15; color: #422006; }
+.edit:hover { box-shadow: 0 4px 16px rgba(250,204,21,0.3); }
+.back { background: rgba(51,65,85,0.8); color: #e5e7eb; }
+.back:hover { background: rgba(51,65,85,1); }
 
-    .note-box {
-      background: #020617;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 10px;
-      margin-top: 10px;
-    }
+ul { padding-left: 20px; }
+li { margin: 8px 0; cursor: pointer; font-size: 14px; transition: opacity 0.2s ease; }
+li:hover { opacity: 0.8; }
 
-    .note-time { font-size: 11px; color: #94a3b8; margin-bottom: 6px; }
-    .note-text { font-size: 14px; margin-bottom: 8px; }
+.hidden { display: none; }
 
-    .note-actions {
-      display: flex;
-      gap: 8px;
-    }
-  </style>
+.note-box {
+  background: rgba(2,6,23,0.6);
+  border: 1px solid rgba(51,65,85,0.4);
+  border-radius: 16px;
+  padding: 14px;
+  margin-top: 12px;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.note-box:hover {
+  background: rgba(2,6,23,0.8);
+  transform: translateY(-1px);
+}
+
+.note-time { font-size: 11px; color: #94a3b8; margin-bottom: 8px; }
+.note-text { font-size: 14px; margin-bottom: 10px; line-height: 1.6; }
+
+.note-actions {
+  display: flex;
+  gap: 10px;
+}
+.reading-mode {
+  position: fixed;
+  inset: 0;
+  background: rgba(2,6,23,0.98);
+  z-index: 1000;
+  padding: 40px 24px;
+  overflow-y: auto;
+}
+.reading-mode .reading-content {
+  max-width: 800px;
+  margin: 0 auto;
+  font-size: 18px;
+  line-height: 2;
+  color: #e5e7eb;
+}
+.reading-mode .reading-title {
+  font-size: 24px;
+  margin-bottom: 24px;
+  font-weight: 600;
+}
+.reading-mode .reading-text {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.reading-mode .reading-close {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(51,65,85,0.8);
+  color: #e5e7eb;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 1001;
+}
+</style>
 </head>
 
 <body>
 
 <h1>📚 My Notes</h1>
 
-<!-- ADD SUBJECT -->
 <div class="card">
   <input id="subjectInput" placeholder="Add subject (Physics, Maths…)" />
-  <button class="add" onclick="addSubject()">Add Subject</button>
+  <button class="add" id="addSubjectBtn">Add Subject</button>
 </div>
 
-<!-- SUBJECT LIST -->
 <div class="card">
   <ul id="subjectList"></ul>
 </div>
 
-<!-- NOTES -->
 <div class="card hidden" id="notesSection">
   <h2 id="activeSubject"></h2>
-  <button class="delete" onclick="deleteSubject()">Delete Subject</button>
+  <button class="delete" id="deleteSubjectBtn">Delete Subject</button>
 
   <textarea id="noteInput" placeholder="Write your notes here…"></textarea>
-  <button class="save" onclick="saveNote()">Save Note</button>
+  <button class="save" id="saveNoteBtn">Save Note</button>
 
   <div id="notesList"></div>
 </div>
 
-<button class="back" onclick="location.href='index.html'">⬅ Back</button>
+<button class="back" onclick="history.back()">⬅ Back</button>
 
 <script>
-  let data = JSON.parse(localStorage.getItem("subjectNotes")) || {};
-  let currentSubject = "";
-  let editIndex = null;
+/* 🔹 State */
+let data = JSON.parse(localStorage.getItem("subjectNotes")) || {};
+let currentSubject = localStorage.getItem("activeSubject") || "";
+let editIndex = null;
 
-  function saveData() {
-    localStorage.setItem("subjectNotes", JSON.stringify(data));
-  }
+/* 🔹 Elements */
+const subjectInput = document.getElementById("subjectInput");
+const subjectList = document.getElementById("subjectList");
+const notesSection = document.getElementById("notesSection");
+const activeSubjectEl = document.getElementById("activeSubject");
+const noteInput = document.getElementById("noteInput");
+const notesList = document.getElementById("notesList");
 
-  function addSubject() {
-    const name = subjectInput.value.trim();
-    if (!name || data[name]) return;
-    data[name] = [];
-    subjectInput.value = "";
-    saveData();
-    renderSubjects();
-  }
+const addSubjectBtn = document.getElementById("addSubjectBtn");
+const saveNoteBtn = document.getElementById("saveNoteBtn");
+const deleteSubjectBtn = document.getElementById("deleteSubjectBtn");
 
-  function renderSubjects() {
-    subjectList.innerHTML = "";
-    Object.keys(data).forEach(sub => {
-      const li = document.createElement("li");
-      li.textContent = "📘 " + sub;
-      li.onclick = () => openSubject(sub);
-      subjectList.appendChild(li);
-    });
-  }
+/* 🔹 Helpers */
+function saveData() {
+  localStorage.setItem("subjectNotes", JSON.stringify(data));
+  localStorage.setItem("activeSubject", currentSubject);
+}
 
-  function openSubject(sub) {
-    currentSubject = sub;
-    editIndex = null;
-    notesSection.classList.remove("hidden");
-    activeSubject.textContent = sub;
-    noteInput.value = "";
-    renderNotes();
-  }
+/* 🔹 Subjects */
+function addSubject() {
+  const name = subjectInput.value.trim();
+  if (!name || data[name]) return;
 
-  function saveNote() {
-    const text = noteInput.value.trim();
-    if (!text) return;
-
-    if (editIndex !== null) {
-      data[currentSubject][editIndex].text = text;
-      editIndex = null;
-    } else {
-      data[currentSubject].push({
-        text,
-        time: new Date().toLocaleString()
-      });
-    }
-
-    noteInput.value = "";
-    saveData();
-    renderNotes();
-  }
-
-  function editNote(index) {
-    noteInput.value = data[currentSubject][index].text;
-    editIndex = index;
-  }
-
-  function deleteNote(index) {
-    data[currentSubject].splice(index, 1);
-    saveData();
-    renderNotes();
-  }
-
-  function deleteSubject() {
-    if (!confirm("Delete entire subject?")) return;
-    delete data[currentSubject];
-    currentSubject = "";
-    notesSection.classList.add("hidden");
-    saveData();
-    renderSubjects();
-  }
-
-  function renderNotes() {
-    notesList.innerHTML = "";
-    data[currentSubject].forEach((note, index) => {
-      const box = document.createElement("div");
-      box.className = "note-box";
-
-      box.innerHTML = `
-        <div class="note-time">🕒 ${note.time}</div>
-        <div class="note-text">${note.text}</div>
-        <div class="note-actions">
-          <button class="edit" onclick="editNote(${index})">Edit</button>
-          <button class="delete" onclick="deleteNote(${index})">Delete</button>
-        </div>
-      `;
-
-      notesList.appendChild(box);
-    });
-  }
-
+  data[name] = [];
+  subjectInput.value = "";
+  saveData();
   renderSubjects();
+}
+
+function renderSubjects() {
+  subjectList.innerHTML = "";
+  Object.keys(data).forEach(sub => {
+    const li = document.createElement("li");
+    li.textContent = "📘 " + sub;
+    li.onclick = () => openSubject(sub);
+    subjectList.appendChild(li);
+  });
+}
+
+function openSubject(sub) {
+  if (!data[sub]) return;
+
+  currentSubject = sub;
+  editIndex = null;
+  notesSection.classList.remove("hidden");
+  activeSubjectEl.textContent = sub;
+  noteInput.value = "";
+  saveData();
+  renderNotes();
+}
+
+/* 🔹 Notes */
+function saveNote() {
+  if (!currentSubject) return;
+
+  const text = noteInput.value.trim();
+  if (!text) return;
+
+  if (editIndex !== null) {
+    data[currentSubject][editIndex].text = text;
+    editIndex = null;
+  } else {
+    data[currentSubject].push({
+      text,
+      time: new Date().toLocaleString()
+    });
+  }
+
+  noteInput.value = "";
+  saveData();
+  renderNotes();
+}
+
+function editNote(index) {
+  noteInput.value = data[currentSubject][index].text;
+  editIndex = index;
+}
+
+function deleteNote(index) {
+  data[currentSubject].splice(index, 1);
+  saveData();
+  renderNotes();
+}
+
+function deleteSubject() {
+  if (!currentSubject) return;
+  if (!confirm("Delete entire subject?")) return;
+
+  delete data[currentSubject];
+  currentSubject = "";
+  editIndex = null;
+  notesSection.classList.add("hidden");
+  saveData();
+  renderSubjects();
+}
+
+function renderNotes() {
+  notesList.innerHTML = "";
+  data[currentSubject].forEach((note, index) => {
+    const box = document.createElement("div");
+    box.className = "note-box";
+
+    box.innerHTML = `
+      <div class="note-time">🕒 ${note.time}</div>
+      <div class="note-text">${note.text}</div>
+      <div class="note-actions">
+        <button class="edit">Edit</button>
+        <button class="delete">Delete</button>
+      </div>
+    `;
+
+    box.querySelector(".edit").onclick = () => editNote(index);
+    box.querySelector(".delete").onclick = () => deleteNote(index);
+
+    notesList.appendChild(box);
+  });
+}
+
+/* 🔹 Reading Mode */
+const readingModeBtn = document.getElementById("readingModeBtn");
+const readingMode = document.createElement("div");
+readingMode.className = "reading-mode";
+readingMode.style.display = "none";
+readingMode.innerHTML = `
+  <button class="reading-close" id="readingClose">Close Reading Mode</button>
+  <div class="reading-content">
+    <div class="reading-title" id="readingTitle"></div>
+    <div class="reading-text" id="readingText"></div>
+  </div>
+`;
+document.body.appendChild(readingMode);
+
+function openReadingMode(subject) {
+  if (!subject || !data[subject] || data[subject].length === 0) return;
+  const allNotes = data[subject].map(n => n.text).join("\n\n");
+  document.getElementById("readingTitle").textContent = subject;
+  document.getElementById("readingText").textContent = allNotes;
+  readingMode.style.display = "block";
+}
+
+if(readingModeBtn){
+  readingModeBtn.onclick = () => {
+    if (currentSubject) {
+      openReadingMode(currentSubject);
+    } else {
+      alert("Please select a subject first");
+    }
+  };
+}
+
+if(document.getElementById("readingClose")){
+  document.getElementById("readingClose").onclick = () => {
+    readingMode.style.display = "none";
+  };
+}
+
+/* 🔹 Apply settings */
+(function(){
+  const fontSize = localStorage.getItem('fontSize') || 'medium';
+  const sizes = { small: '13px', medium: '14px', large: '16px' };
+  document.documentElement.style.setProperty('--font-size-base', sizes[fontSize] || sizes.medium);
+  const lineSpacing = localStorage.getItem('lineSpacing') || 'comfortable';
+  const spacings = { tight: '1.4', comfortable: '1.6', spacious: '1.8' };
+  document.documentElement.style.setProperty('--line-height-base', spacings[lineSpacing] || spacings.comfortable);
+})();
+
+/* 🔹 Events */
+addSubjectBtn.onclick = addSubject;
+saveNoteBtn.onclick = saveNote;
+deleteSubjectBtn.onclick = deleteSubject;
+
+/* 🔹 Init */
+renderSubjects();
+if (currentSubject && data[currentSubject]) {
+  openSubject(currentSubject);
+}
 </script>
 
 </body>

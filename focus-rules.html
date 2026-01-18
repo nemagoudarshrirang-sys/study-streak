@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Deep Focus Rules</title>
+<style>
+body{min-height:100vh;background:#020617;display:flex;align-items:center;justify-content:center;color:#e5e7eb;font-family:Segoe UI,system-ui}
+.card{width:360px;background:#0f172a;padding:22px;border-radius:20px;box-shadow:0 0 0 1px rgba(255,255,255,0.06)}
+h2{font-size:22px;margin-bottom:6px}
+.sub{font-size:13px;color:#94a3b8;margin-bottom:12px}
+.rule{background:#111827;padding:12px;border-radius:14px;margin-bottom:10px}
+.back{width:100%;margin-top:10px;padding:12px;border:none;border-radius:14px;background:#334155;color:#e5e7eb}
+.calm{filter:brightness(0.9) saturate(0.9)}
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>🧠 Deep Focus Rules</h2>
+  <div class="sub">Quiet clarity. Gentle guidance.</div>
+  <div class="rule">Silence helps the mind settle.</div>
+  <div class="rule">Put the phone face-down and away.</div>
+  <div class="rule">One task only. No switching.</div>
+  <div class="rule">Keep posture soft. Breathe gently.</div>
+  <div class="rule">Accept thoughts; return to the task.</div>
+  <div class="rule">Small steps count. Start small, continue.</div>
+  <button class="back" onclick="window.location.href='focus.html'">← Back</button>
+</div>
+<script src="env.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+try{ if(!firebase.apps.length){ firebase.initializeApp(window.__FIREBASE_CONFIG); } }catch(e){}
+if(localStorage.getItem('calmMode')==='on') document.body.classList.add('calm');
+</script>
+</body>
+</html>

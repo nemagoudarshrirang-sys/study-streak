@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Groups</title>
+
+<style>
+:root {
+  --font-size-base: 14px;
+  --line-height-base: 1.6;
+  --theme-variant: 'soft-dark';
+}
+body{
+  background:#020617;
+  color:#e5e7eb;
+  font-family:Segoe UI,system-ui;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+}
+.card{
+  width:360px;
+  background:#0f172a;
+  padding:24px;
+  border-radius:18px;
+}
+input,button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:12px;
+  border:none;
+}
+input{background:#020617;color:#fff}
+button{background:#22c55e;font-weight:600;cursor:pointer}
+.small{font-size:13px;color:#94a3b8;margin-top:6px}
+.code{font-size:20px;letter-spacing:3px;font-weight:700}
+.member{display:flex;justify-content:space-between;margin-top:6px}
+.hidden{display:none}
+.section{margin-top:16px;padding:16px;border-radius:16px;background:#0b1324;box-shadow:0 0 0 1px rgba(255,255,255,0.06)}
+.note{padding:12px;border-radius:12px;background:#0a0f1e;margin-top:8px}
+.note .meta{font-size:12px;color:#94a3b8;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block}
+.avatar{width:24px;height:24px;border-radius:50%;background:#0a0f1e;color:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:12px}
+.bubble{background:#0a0f1e;border-radius:14px;padding:10px 12px;margin-top:8px;box-shadow:0 0 0 1px rgba(255,255,255,0.04)}
+#chatList{max-height:220px;overflow-y:auto;padding-right:6px}
+</style>
+<style>
+.card{display:none!important}
+.wa-app{position:fixed;inset:0;background:radial-gradient(circle at top, #0f172a, #020617);color:#e5e7eb}
+.wa-top{position:fixed;top:0;left:0;right:0;height:60px;background:rgba(17,24,39,0.95);display:flex;align-items:center;justify-content:space-between;padding:0 16px;box-shadow:0 1px 0 rgba(255,255,255,0.08);z-index:10;backdrop-filter:blur(12px)}
+.wa-left{display:flex;align-items:center;gap:14px}
+.wa-back{background:transparent;border:none;color:#e5e7eb;font-size:22px;cursor:pointer;opacity:0.85;transition:opacity 0.2s ease;padding:4px}
+.wa-back:hover{opacity:1}
+.wa-title{display:flex;flex-direction:column;gap:2px}
+.wa-name{font-weight:700;font-size:16px;letter-spacing:-0.3px}
+.wa-sub{font-size:12px;color:#94a3b8}
+.wa-icons{display:flex;align-items:center;gap:14px}
+.wa-icon{background:transparent;border:none;color:#e5e7eb;font-size:20px;cursor:pointer;opacity:0.85;transition:opacity 0.2s ease, transform 0.15s ease;padding:4px}
+.wa-icon:hover{opacity:1;transform:scale(1.1)}
+.wa-body{position:absolute;top:60px;bottom:72px;left:0;right:0;overflow-y:auto;background:rgba(11,19,36,0.4);padding:16px 12px;scroll-behavior:smooth;padding-bottom:max(16px, env(safe-area-inset-bottom, 0px) + 16px)}
+.wa-msg-list{display:flex;flex-direction:column;gap:10px;padding-bottom:8px}
+.wa-bubble{max-width:72%;padding:12px 14px;border-radius:18px;position:relative;word-wrap:break-word;box-shadow:0 2px 8px rgba(0,0,0,0.15);margin:2px 0;opacity:0;animation:waFadeIn .15s ease-out forwards;line-height:var(--line-height-base, 1.65);font-size:var(--font-size-base, 14px)}
+.wa-bubble.receiver{align-self:flex-start;background:rgba(31,41,55,0.85);backdrop-filter:blur(8px);border-bottom-left-radius:4px}
+.wa-bubble.sender{align-self:flex-end;background:rgba(30,58,47,0.85);backdrop-filter:blur(8px);border-bottom-right-radius:4px}
+.wa-meta{font-size:10px;color:rgba(148,163,184,0.6);margin-bottom:4px;display:flex;align-items:center;gap:6px;margin-top:2px}
+.wa-content img{max-width:100%;border-radius:12px;margin-top:4px}
+.wa-content video{max-width:100%;border-radius:12px;margin-top:4px}
+.wa-input{position:fixed;bottom:0;left:0;right:0;min-height:72px;background:rgba(17,24,39,0.95);display:flex;align-items:flex-end;padding:10px 12px;gap:10px;box-shadow:0 -1px 0 rgba(255,255,255,0.08);backdrop-filter:blur(12px);padding-bottom:max(10px, env(safe-area-inset-bottom))}
+.wa-emoji{background:rgba(10,15,30,0.8);border:none;color:#22c55e;opacity:.8;border-radius:50%;width:40px;height:40px;cursor:pointer;transition:all 0.2s ease;backdrop-filter:blur(8px)}
+.wa-emoji:hover{opacity:1;transform:scale(1.1)}
+.wa-text{flex:1;min-height:44px;max-height:120px;border:none;border-radius:24px;background:rgba(10,15,30,0.8);color:#e5e7eb;padding:14px 18px;font-size:14px;resize:none;line-height:1.5;backdrop-filter:blur(8px);transition:all 0.2s ease;overflow-y:auto}
+.wa-text:focus{outline:none;background:rgba(10,15,30,0.95);box-shadow:0 0 0 1px rgba(255,255,255,0.05)}
+.wa-attach,.wa-camera,.wa-mic,.wa-send{background:rgba(10,15,30,0.8);border:none;color:#22c55e;opacity:.8;border-radius:50%;width:40px;height:40px;cursor:pointer;transition:all 0.2s ease;backdrop-filter:blur(8px)}
+.wa-attach:hover,.wa-camera:hover,.wa-mic:hover{opacity:1;transform:scale(1.1)}
+.wa-send{background:rgba(34,197,94,0.85);color:#0b1a12;font-weight:600;display:none;opacity:1;box-shadow:0 2px 8px rgba(34,197,94,0.25);border-radius:50%;width:40px;height:40px;font-size:18px;transition:all 0.2s ease;backdrop-filter:blur(8px)}
+.wa-send:hover:not(:disabled){background:rgba(34,197,94,0.95);box-shadow:0 4px 12px rgba(34,197,94,0.35);transform:scale(1.05)}
+.wa-send:disabled{background:rgba(51,65,85,0.6);color:rgba(148,163,184,0.5);cursor:not-allowed;opacity:0.6}
+.wa-typing{position:absolute;bottom:72px;left:16px;font-size:12px;color:#94a3b8;opacity:0;animation:waTypingFade .6s ease-in-out forwards;padding:6px 12px;background:rgba(31,41,55,0.8);border-radius:12px;backdrop-filter:blur(8px)}
+.wa-notes{margin-bottom:20px;padding:20px;background:rgba(11,19,36,0.5);border-radius:20px;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.05)}
+.wa-notes-head{display:flex;align-items:center;gap:12px;margin:0 0 16px 0}
+.wa-chip{background:rgba(10,15,30,0.6);color:#e5e7eb;border:none;border-radius:20px;padding:8px 16px;font-size:12px;cursor:pointer;font-weight:500;transition:all 0.2s ease;backdrop-filter:blur(8px);pointer-events:none;opacity:0.8}
+.wa-notes-title{font-size:13px;color:#94a3b8;line-height:1.5;font-weight:400}
+.wa-note-bubble{background:rgba(15,23,42,0.6);border-radius:18px;padding:14px 16px;box-shadow:0 2px 8px rgba(0,0,0,0.15);margin:10px 0;backdrop-filter:blur(8px);transition:all 0.2s ease;border:1px solid rgba(255,255,255,0.04)}
+.wa-note-bubble:hover{background:rgba(15,23,42,0.8);transform:translateY(-1px)}
+.wa-note-meta{font-size:12px;color:rgba(148,163,184,0.8);margin-bottom:8px;display:flex;align-items:center;gap:8px;font-weight:500}
+.wa-note-meta .wa-note-author{color:#cbd5e1;font-weight:600}
+.wa-note-meta .wa-note-time{color:#94a3b8;margin-left:auto;font-weight:400}
+.wa-note-text{font-size:var(--font-size-base, 14px);color:#e5e7eb;line-height:var(--line-height-base, 1.6);word-wrap:break-word}
+.wa-dot{width:6px;height:6px;border-radius:50%;background:#64748b;display:inline-block;opacity:0.6}
+.wa-add-row{display:flex;gap:10px;margin-top:14px}
+.wa-add-row input{flex:1;background:rgba(10,15,30,0.7);color:#e5e7eb;border:none;border-radius:16px;padding:12px 16px;font-size:13px;transition:background 0.2s ease;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.05)}
+.wa-add-row input:focus{outline:none;background:rgba(10,15,30,0.9);border-color:rgba(255,255,255,0.1)}
+.wa-add-row input::placeholder{color:rgba(148,163,184,0.6)}
+.wa-add-row button{background:rgba(51,65,85,0.7);color:#e5e7eb;border:none;border-radius:16px;padding:12px 18px;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s ease;backdrop-filter:blur(8px)}
+.wa-add-row button:hover{background:rgba(51,65,85,0.9);transform:translateY(-1px)}
+.wa-hint{font-size:11px;color:#94a3b8;margin-left:8px;opacity:0.7}
+.wa-reply{position:absolute;bottom:72px;left:12px;right:12px;background:rgba(18,18,18,0.95);border-left:3px solid rgba(51,65,85,0.8);border-radius:14px;padding:10px 12px;color:#e5e7eb;display:none;backdrop-filter:blur(12px);box-shadow:0 4px 16px rgba(0,0,0,0.3)}
+.wa-reply .who{font-size:11px;color:#94a3b8;margin-bottom:4px;font-weight:500}
+.wa-reply .text{font-size:12px;line-height:1.4}
+.wa-reply .close{position:absolute;top:8px;right:10px;background:transparent;border:none;color:#94a3b8;cursor:pointer;opacity:0.7;transition:opacity 0.2s ease;padding:4px}
+.wa-reply .close:hover{opacity:1}
+@keyframes waFadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes waTypingFade{from{opacity:0}to{opacity:1}}
+@media (max-width: 480px) {
+  .wa-input {
+    padding-bottom: max(10px, env(safe-area-inset-bottom, 10px));
+  }
+  .wa-body {
+    bottom: max(72px, calc(72px + env(safe-area-inset-bottom, 0px)));
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="card">
+  <h2>👥 Study Groups</h2>
+  <h3 style="margin-top:8px">Create a Group</h3>
+  <input id="groupName" placeholder="Group name">
+  <button onclick="createGroup()">Create Group</button>
+
+  <div class="small" id="status"></div>
+
+  <hr style="margin:16px 0;border-color:#334155">
+
+  <div id="groupBox" class="hidden">
+    <div class="small">Group Name</div>
+    <div id="groupNameShow" style="font-size:16px;font-weight:600;margin-bottom:6px"></div>
+    <div class="small">Group Code</div>
+    <div class="code" id="groupCode"></div>
+    <button id="copyCodeBtn">Copy Code</button>
+    <button id="deleteGroupBtn" style="background:#ef4444">Delete Group</button>
+    <div class="small" style="margin-top:10px">Members: <span id="memberCount"></span></div>
+    <div style="display:flex;gap:10px;margin-top:10px">
+      <label style="display:flex;align-items:center;gap:8px;background:#0a0f1e;padding:8px 10px;border-radius:12px"><input type="checkbox" id="muteToggle">Mute</label>
+      <label style="display:flex;align-items:center;gap:8px;background:#0a0f1e;padding:8px 10px;border-radius:12px"><input type="checkbox" id="privacyToggle">Privacy</label>
+    </div>
+    <div id="members"></div>
+  </div>
+
+  <hr style="margin:16px 0;border-color:#334155">
+
+  <div id="focusRoom" class="hidden">
+    <div style="font-size:18px; margin-bottom:6px">🌿 Shared Focus Space</div>
+    <div class="small">Quiet presence. No pressure.</div>
+    <div id="focusSummary" class="small" style="margin-top:8px"></div>
+    <div id="focusAvatars" style="display:flex;gap:6px;margin-top:8px"></div>
+    <div id="focusList" style="margin-top:10px"></div>
+    <div id="focusEmpty" class="small" style="margin-top:10px">No one is studying right now. Be the first.</div>
+  </div>
+
+  <div id="notesSection" class="section">
+    <div style="font-size:18px; margin-bottom:6px">🪶 Thought Notes</div>
+    <div id="notesList"></div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <input id="noteInput" placeholder="Share a calm study thought" maxlength="120" style="flex:1;background:#020617;color:#fff">
+      <button id="addNoteBtn">+ Add Thought</button>
+    </div>
+  </div>
+
+  <div id="chatSection" class="section">
+    <button id="chatToggleBtn" style="background:#334155">Open Group Discussion</button>
+    <div id="chatBox" class="hidden" style="margin-top:10px">
+      <div id="chatList"></div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <input id="chatInput" placeholder="Type message" maxlength="240" style="flex:1;background:#020617;color:#fff">
+        <button id="sendChatBtn">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:18px">Join a Group</h3>
+  <button style="margin-top:8px" onclick="location.href='join-group.html'">Join Group</button>
+  <input id="joinCode" placeholder="Enter code" style="text-transform:uppercase;letter-spacing:3px">
+  <button onclick="joinInline()">Join Using Code</button>
+</div>
+
+<div class="wa-app">
+  <div class="wa-top">
+    <div class="wa-left">
+      <button class="wa-back" onclick="location.href='group-inbox.html'">←</button>
+      <div class="wa-title">
+        <div class="wa-name" id="waGroupName"></div>
+        <div class="wa-sub" id="waParticipants"></div>
+      </div>
+    </div>
+    <div class="wa-icons">
+      <button class="wa-icon" id="waVideo">🎥</button>
+      <button class="wa-icon" id="waAudio">📞</button>
+      <button class="wa-icon" id="waMenu">⋮</button>
+    </div>
+  </div>
+  <div class="wa-body">
+    <div class="wa-notes" id="waNotes">
+      <div class="wa-notes-head">
+        <button class="wa-chip" id="waNotesChip">📌 Thoughts</button>
+        <div class="wa-notes-title">Thought Notes (for focus)</div>
+      </div>
+      <div id="notesList"></div>
+      <div class="wa-add-row">
+        <input id="noteInput" placeholder="Share a calm study thought" maxlength="120">
+        <button id="addNoteBtn">+ Add</button>
+      </div>
+    </div>
+    <div id="chatList" class="wa-msg-list"></div>
+    <div id="waTyping" class="wa-typing" style="display:none">typing…</div>
+    <div id="waReply" class="wa-reply">
+      <button class="close" id="waReplyClose">✕</button>
+      <div class="who" id="waReplyWho"></div>
+      <div class="text" id="waReplyText"></div>
+    </div>
+  </div>
+  <div class="wa-input">
+    <button class="wa-emoji" id="waEmoji" style="display:none">🙂</button>
+    <textarea id="chatInput" class="wa-text" placeholder="Message"></textarea>
+    <button class="wa-attach" id="waAttachBtn">📎</button>
+    <button class="wa-camera" id="waCameraBtn">📷</button>
+    <button class="wa-mic" id="waMicBtn">🎤</button>
+    <button class="wa-send" id="sendChatBtn" disabled>✈</button>
+    <span class="wa-hint" id="waHint" style="display:none">Shift + Enter for new line</span>
+    <input type="file" id="waAttach" accept="image/*,video/*" multiple style="display:none" />
+    <input type="file" id="waCamera" accept="image/*" capture="environment" style="display:none" />
+  </div>
+  <div id="waMenuSheet" style="position:fixed;top:60px;right:12px;background:rgba(10,15,30,0.95);border:1px solid rgba(51,65,85,0.6);border-radius:16px;padding:8px;display:none;z-index:20;backdrop-filter:blur(16px);box-shadow:0 8px 24px rgba(0,0,0,0.4)">
+    <button style="display:block;width:180px;background:rgba(17,24,39,0.8);color:#e5e7eb;border:none;border-radius:12px;padding:10px;margin:4px 0;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s ease" id="waCreate">Create Group</button>
+    <button style="display:block;width:180px;background:rgba(17,24,39,0.8);color:#e5e7eb;border:none;border-radius:12px;padding:10px;margin:4px 0;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s ease" id="waJoin">Join Group</button>
+    <button style="display:block;width:180px;background:rgba(17,24,39,0.8);color:#e5e7eb;border:none;border-radius:12px;padding:10px;margin:4px 0;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s ease" id="waCopy">Copy Code</button>
+    <button style="display:block;width:180px;background:rgba(239,68,68,0.8);color:#fff;border:none;border-radius:12px;padding:10px;margin:4px 0;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s ease" id="waDelete">Delete Group</button>
+  </div>
+</div>
+
+<script src="env.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="core/group-notes.js"></script>
+<script src="core/group-chat.js"></script>
+ 
+
+<script>
+try{ if(!firebase.apps.length){ firebase.initializeApp(window.__FIREBASE_CONFIG); } }catch(e){}
+const db = firebase.firestore();
+let lastActiveSessions = null;
+let liveTick = null;
+
+function getUserName(){
+  let n = localStorage.getItem("userName");
+  if(!n){
+    n = prompt("Enter your name") || "Anonymous";
+    localStorage.setItem("userName", n);
+  }
+  return n;
+}
+
+function genCode(){
+  return Math.random().toString(36).substring(2,8).toUpperCase();
+}
+async function findUniqueCode(){
+  for(let i=0;i<10;i++){
+    const code = genCode();
+    const doc = await db.collection("groups").doc(code).get();
+    if(!doc.exists) return code;
+  }
+  return genCode();
+}
+
+function renderMembers(list){
+  const box = document.getElementById("members");
+  box.innerHTML = "";
+  list.forEach(m=>{
+    box.innerHTML += `
+      <div class="member">
+        <span>${m.name}</span>
+        <span>${m.sessions}</span>
+      </div>`;
+  });
+}
+
+function renderFocusRoom(activeSessions){
+  const cont = document.getElementById("focusRoom");
+  const listBox = document.getElementById("focusList");
+  const empty = document.getElementById("focusEmpty");
+  const summary = document.getElementById("focusSummary");
+  const avatars = document.getElementById("focusAvatars");
+  cont.classList.remove("hidden");
+  listBox.innerHTML = "";
+  avatars.innerHTML = "";
+
+  const entries = activeSessions ? Object.entries(activeSessions) : [];
+  if(entries.length === 0){
+    empty.style.display = "block";
+    summary.textContent = "🌿 Quiet presence available";
+    return;
+  }
+  empty.style.display = "none";
+  summary.textContent = "🌿 Shared focus space";
+
+  entries.forEach(([name, info])=>{
+    let mins = 0;
+    try{
+      if(info && info.startedAt && info.startedAt.toMillis){
+        mins = Math.floor((Date.now() - info.startedAt.toMillis())/60000);
+      }
+    }catch(e){ mins = 0; }
+
+    const row = document.createElement("div");
+    row.className = "member";
+    row.innerHTML = `<span>${name}</span><span>Studying · ${mins}m</span>`;
+    listBox.appendChild(row);
+    const av = document.createElement("div");
+    av.className = "avatar";
+    av.textContent = (name||"")[0]?.toUpperCase()||"?";
+    avatars.appendChild(av);
+  });
+  try{ window.lastActiveSessions = activeSessions||{}; }catch(e){}
+}
+
+function listenGroup(code){
+  db.collection("groups").doc(code).onSnapshot(doc=>{
+    if(!doc.exists) return;
+    const data = doc.data();
+    document.getElementById("groupBox").classList.remove("hidden");
+    document.getElementById("groupNameShow").textContent = data.groupName || data.name || "";
+    document.getElementById("groupCode").textContent = code;
+    const wn = document.getElementById("waGroupName"); if(wn) wn.textContent = data.groupName || data.name || "";
+    const wp = document.getElementById("waParticipants"); if(wp) wp.textContent = ((data.members||[]).length||0) + " participants";
+    renderMembers(data.members || []);
+    document.getElementById("memberCount").textContent = (data.members||[]).length;
+    lastActiveSessions = data.activeSessions || {};
+    renderFocusRoom(lastActiveSessions);
+    if(!liveTick){
+      liveTick = setInterval(()=>{ renderFocusRoom(lastActiveSessions||{}); }, 1000);
+    }
+    try{ window.__groupMembers = data.members||[]; }catch(e){}
+    const mute = document.getElementById("muteToggle");
+    const priv = document.getElementById("privacyToggle");
+    mute.checked = (localStorage.getItem("groupMuted:"+code)||"off")==="on";
+    priv.checked = (localStorage.getItem("groupPrivate:"+code)||"off")==="on";
+    mute.onchange = ()=>{ localStorage.setItem("groupMuted:"+code, mute.checked?"on":"off"); };
+    priv.onchange = ()=>{ localStorage.setItem("groupPrivate:"+code, priv.checked?"on":"off"); };
+    if(window.__groupNotes){ window.__groupNotes.init(code, db, "notesList", "noteInput", "addNoteBtn"); }
+    if(window.__groupChat){ window.__groupChat.init(code, db, "chatList", "chatInput", "sendChatBtn"); }
+    // Typing indicators removed for calm experience
+  }, err => {
+    const status = document.getElementById("status");
+    status.textContent = "Listener error";
+  });
+}
+
+async function createGroup(){
+  const name = document.getElementById("groupName").value.trim();
+  const status = document.getElementById("status");
+  if(!name){
+    status.textContent = "Please enter a group name";
+    return;
+  }
+
+  status.textContent = "Creating group...";
+  let dots = 0;
+  const anim = setInterval(()=>{
+    dots = (dots+1)%4;
+    status.textContent = "Creating group" + ".".repeat(dots);
+  },400);
+  try{
+    const code = await findUniqueCode();
+    const user = getUserName();
+    await db.collection("groups").doc(code).set({
+      name,
+      groupName: name,
+      groupCode: code,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      members: [{ name: user, sessions: 0 }],
+      activeSessions: {}
+    });
+    clearInterval(anim);
+    status.textContent = "Group created ✔️";
+    localStorage.setItem("groupCode", code);
+    listenGroup(code);
+  }catch(e){
+    clearInterval(anim);
+    status.textContent = "Failed to create group";
+  }
+}
+
+function joinInline(){
+  const status = document.getElementById("status");
+  const input = document.getElementById("joinCode");
+  const code = (input.value||"").trim().toUpperCase();
+  if(!code){ status.textContent = "Enter group code"; return; }
+  status.textContent = "Joining...";
+  let dots = 0;
+  const anim = setInterval(()=>{ dots=(dots+1)%4; status.textContent = "Joining"+".".repeat(dots); },400);
+  const user = getUserName();
+  const ref = db.collection("groups").doc(code);
+  ref.get().then(doc=>{
+    if(!doc.exists){ clearInterval(anim); status.textContent = "Invalid group code"; return; }
+    const data = doc.data();
+    const members = data.members||[];
+    if(members.some(m=>m.name===user)){
+      clearInterval(anim);
+      localStorage.setItem("groupCode", code);
+      listenGroup(code);
+      return;
+    }
+    ref.update({ members: firebase.firestore.FieldValue.arrayUnion({ name:user, sessions:0 }) }).then(()=>{
+      clearInterval(anim);
+      localStorage.setItem("groupCode", code);
+      listenGroup(code);
+    }).catch(()=>{ clearInterval(anim); status.textContent = "Failed to join"; });
+  }).catch(()=>{ clearInterval(anim); status.textContent = "Failed to validate code"; });
+}
+
+const copyBtn = document.getElementById("copyCodeBtn");
+const codeEl = document.getElementById("groupCode");
+function copyCode(){
+  const code = codeEl.textContent||"";
+  if(!code) return;
+  navigator.clipboard?.writeText(code).then(()=>{ const s=document.getElementById("status"); s.textContent="Code copied"; setTimeout(()=>{ s.textContent=""; },1200); }).catch(()=>{});
+}
+if(copyBtn) copyBtn.onclick = copyCode;
+if(codeEl) codeEl.onclick = copyCode;
+
+const deleteBtn = document.getElementById("deleteGroupBtn");
+function deleteGroup(){
+  const code = codeEl.textContent||"";
+  if(!code) return;
+  const status = document.getElementById("status");
+  const ok = window.confirm("Delete this group for everyone?");
+  if(!ok) return;
+  status.textContent = "Deleting...";
+  db.collection("groups").doc(code).delete().then(()=>{
+    status.textContent = "Group deleted";
+    localStorage.removeItem("groupCode");
+    document.getElementById("groupBox").classList.add("hidden");
+    document.getElementById("focusRoom").classList.add("hidden");
+    if(liveTick){ clearInterval(liveTick); liveTick=null; }
+    document.getElementById("members").innerHTML = "";
+    document.getElementById("groupNameShow").textContent = "";
+    document.getElementById("groupCode").textContent = "";
+  }).catch(()=>{
+    status.textContent = "Failed to delete";
+  });
+}
+if(deleteBtn) deleteBtn.onclick = deleteGroup;
+
+// Apply font size and line spacing from settings
+(function(){
+  const fontSize = localStorage.getItem('fontSize') || 'medium';
+  const sizes = { small: '13px', medium: '14px', large: '16px' };
+  document.documentElement.style.setProperty('--font-size-base', sizes[fontSize] || sizes.medium);
+  const lineSpacing = localStorage.getItem('lineSpacing') || 'comfortable';
+  const spacings = { tight: '1.4', comfortable: '1.6', spacious: '1.8' };
+  document.documentElement.style.setProperty('--line-height-base', spacings[lineSpacing] || spacings.comfortable);
+  const themeVariant = localStorage.getItem('themeVariant') || 'soft-dark';
+  if(themeVariant==='blue-dark'){
+    document.body.style.background = 'radial-gradient(circle at top, #1e3a5f, #0a1a2e)';
+  }else if(themeVariant==='warm-dark'){
+    document.body.style.background = 'radial-gradient(circle at top, #2d1b1b, #1a0f0f)';
+  }
+})();
+
+const saved = localStorage.getItem("groupCode");
+if(saved){
+  listenGroup(saved);
+}
+
+const waText = document.getElementById("chatInput");
+const waSend = document.getElementById("sendChatBtn");
+const waAttachBtn = document.getElementById("waAttachBtn");
+const waCameraBtn = document.getElementById("waCameraBtn");
+const waMicBtn = document.getElementById("waMicBtn");
+const waAttach = document.getElementById("waAttach");
+const waCamera = document.getElementById("waCamera");
+// Initialize send button state
+if(waSend && waText){
+  waSend.style.display = "block";
+  waSend.disabled = !waText.value.trim();
+}
+// Typing indicators removed for calm, non-addictive experience
+waText.addEventListener("input", ()=>{
+  const hasText = waText.value.trim().length > 0;
+  if(hasText){
+    waSend.style.display = "block";
+    waSend.disabled = false;
+  } else {
+    waSend.style.display = "block";
+    waSend.disabled = true;
+  }
+});
+waText.addEventListener("keydown", (e)=>{
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent||"");
+  if(e.key==="Enter"){
+    if(isMobile){
+      // Mobile: Enter creates newline; sending only via button
+      return;
+    }else{
+      // Desktop: Enter sends if not Shift; Shift+Enter inserts newline
+      if(!e.shiftKey){
+        e.preventDefault();
+        if(waSend.style.display==="block" && !waSend.disabled){ waSend.click(); }
+      } // else: allow newline
+    }
+  }
+});
+const waHint = document.getElementById("waHint");
+if(waHint){
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent||"");
+  waHint.textContent = "Shift + Enter for new line";
+  waHint.style.display = isMobile ? "none" : "inline";
+}
+const waNotesChip = document.getElementById("waNotesChip");
+waNotesChip.onclick = ()=>{
+  document.querySelector(".wa-body")?.scrollTo({ top:0, behavior:"smooth" });
+};
+// Emoji button hidden to reduce noise and maintain focus
+// document.getElementById("waEmoji").onclick = ()=>{
+//   waText.value += "🙂";
+//   waText.dispatchEvent(new Event("input"));
+//   waText.focus();
+// };
+waAttachBtn.onclick = ()=>{ waAttach.click(); };
+waCameraBtn.onclick = ()=>{ waCamera.click(); };
+window.__showReply = function(target){
+  window.__replyTarget = target;
+  const box = document.getElementById("waReply");
+  const who = document.getElementById("waReplyWho");
+  const text = document.getElementById("waReplyText");
+  who.textContent = target.author ? `Reply to ${target.author}` : "Reply";
+  text.textContent = (target.preview||"").slice(0,120);
+  box.style.display = "block";
+};
+window.__clearReply = function(){
+  window.__replyTarget = null;
+  const box = document.getElementById("waReply");
+  box.style.display = "none";
+};
+document.getElementById("waReplyClose").onclick = ()=>{ window.__clearReply(); };
+waAttach.onchange = async ()=>{
+  const code = localStorage.getItem("groupCode")||"";
+  if(!code) return;
+  const fdb = firebase.firestore();
+  const author = (window.getUserName?window.getUserName():localStorage.getItem("userName"))||"Anonymous";
+  for(const file of Array.from(waAttach.files||[])){
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      const url = e.target.result;
+      const isVideo = (file.type||"").startsWith("video/");
+      const isImage = (file.type||"").startsWith("image/");
+      const type = isVideo ? "video" : (isImage ? "image" : "file");
+      fdb.collection("groups").doc(code).collection("chat").add({ author, type, content:url, createdAt: firebase.firestore.FieldValue.serverTimestamp() }).catch(()=>{});
+    };
+    reader.readAsDataURL(file);
+  }
+  waAttach.value = "";
+};
+waCamera.onchange = ()=>{
+  const code = localStorage.getItem("groupCode")||"";
+  if(!code) return;
+  const fdb = firebase.firestore();
+  const author = (window.getUserName?window.getUserName():localStorage.getItem("userName"))||"Anonymous";
+  const file = waCamera.files && waCamera.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    const url = e.target.result;
+    fdb.collection("groups").doc(code).collection("chat").add({ author, type:"image", content:url, createdAt: firebase.firestore.FieldValue.serverTimestamp() }).catch(()=>{});
+  };
+  reader.readAsDataURL(file);
+  waCamera.value = "";
+};
+let waRec = null, waChunks = [];
+waMicBtn.onclick = async ()=>{
+  if(waRec && waRec.state !== "inactive"){
+    waRec.stop();
+    return;
+  }
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
+    waChunks = [];
+    waRec = new MediaRecorder(stream);
+    waRec.ondataavailable = e=>{ if(e.data.size>0) waChunks.push(e.data); };
+    waRec.onstop = ()=>{
+      const blob = new Blob(waChunks, { type:"audio/webm" });
+      const reader = new FileReader();
+      reader.onload = (e)=>{
+        const url = e.target.result;
+        const code = localStorage.getItem("groupCode")||"";
+        if(!code) return;
+        const fdb = firebase.firestore();
+        const author = (window.getUserName?window.getUserName():localStorage.getItem("userName"))||"Anonymous";
+        fdb.collection("groups").doc(code).collection("chat").add({ author, type:"audio", content:url, createdAt: firebase.firestore.FieldValue.serverTimestamp() }).catch(()=>{});
+      };
+      reader.readAsDataURL(blob);
+    };
+    waRec.start();
+  }catch(e){}
+};
+const waMenu = document.getElementById("waMenu");
+const waSheet = document.getElementById("waMenuSheet");
+waMenu.onclick = ()=>{
+  waSheet.style.display = waSheet.style.display==="none" ? "block" : "none";
+};
+document.getElementById("waJoin").onclick = ()=>{ location.href = "join-group.html"; };
+document.getElementById("waCopy").onclick = ()=>{ copyCode(); };
+document.getElementById("waDelete").onclick = ()=>{ deleteGroup(); };
+document.getElementById("waCreate").onclick = ()=>{
+  const n = prompt("Group name")||"";
+  if(!n) return;
+  const input = document.getElementById("groupName");
+  if(input) input.value = n;
+  createGroup();
+  waSheet.style.display = "none";
+};
+</script>
+</body>
+</html>

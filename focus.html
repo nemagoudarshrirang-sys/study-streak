@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Focus Hub</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #1e293b, #020617);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e5e7eb;
+  line-height: 1.6;
+}
+
+.card {
+  width: 360px;
+  padding: 32px 28px;
+  border-radius: 24px;
+  background: rgba(15,23,42,0.85);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06),
+    0 25px 60px rgba(0,0,0,0.6);
+}
+
+h1 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-weight: 500;
+}
+
+.item {
+  background: rgba(2,6,23,0.6);
+  border-radius: 16px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.item:hover {
+  background: rgba(15,23,42,0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.item span {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.item small {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.back {
+  width: 100%;
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  background: rgba(51,65,85,0.8);
+  color: #e5e7eb;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back:hover {
+  background: rgba(51,65,85,1);
+  transform: translateY(-1px);
+}
+.calm { filter: brightness(0.9) saturate(0.9); }
+.soft { background:#111827; border-radius:14px; padding:12px; margin-top:12px; }
+.title { font-size:14px; color:#94a3b8; margin-bottom:8px; }
+.presence { margin-top:8px; }
+.presence .row { display:flex; justify-content:space-between; padding:8px 10px; border-radius:12px; background:#0b3b2a; margin-bottom:8px; }
+.presence .empty { font-size:13px; color:#94a3b8; }
+.intensity button { margin-right:8px; padding:8px 12px; border:none; border-radius:12px; cursor:pointer; }
+.intensity .on { background:#22c55e; color:#0b1a12; }
+.intensity .off { background:#334155; color:#e5e7eb; }
+.reflection textarea { width:100%; min-height:80px; border:none; border-radius:12px; padding:10px; background:#0b1220; color:#e5e7eb; }
+.reflection button { margin-top:8px; width:100%; padding:10px; border:none; border-radius:12px; background:#22c55e; color:#0b1a12; cursor:pointer; }
+.intent { background:#0b1220; border-radius:14px; padding:10px; margin-bottom:12px; }
+.intent .line { display:flex; justify-content:space-between; font-size:13px; color:#94a3b8; }
+.intent .value { margin-top:6px; font-size:14px; }
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h1>⚙️ Focus Hub</h1>
+  <div class="section">
+    <div class="item" onclick="window.location.href='settings.html'">
+      <span>🌿 Calm Mode</span>
+      <small>Open</small>
+    </div>
+    <div class="item" onclick="window.location.href='focus/deep-focus.html'">
+      <span>🎯 Deep Focus</span>
+      <small>Open</small>
+    </div>
+    <div class="item" onclick="window.location.href='focus-rules.html'">
+      <span>🎯 Deep Focus Rules</span>
+      <small>Open</small>
+    </div>
+    <div class="item" onclick="window.location.href='focus/break-recovery.html'">
+      <span>🌿 Break & Recovery</span>
+      <small>Open</small>
+    </div>
+    <div class="item" onclick="window.location.href='focus/progress-reflection.html'">
+      <span>🧭 Progress & Reflection</span>
+      <small>Open</small>
+    </div>
+    <div class="item" onclick="window.location.href='focus/safety-wellbeing.html'">
+      <span>🛡️ Safety & Wellbeing</span>
+      <small>Open</small>
+    </div>
+    <div class="item" onclick="window.location.href='focus/advanced.html'">
+      <span>⚙️ Advanced (Future)</span>
+      <small>Open</small>
+    </div>
+    <div class="item" onclick="window.location.href='mind-reset.html'">
+      <span>🧘 Mind Reset</span>
+      <small>Open</small>
+    </div>
+    <div class="item" onclick="window.location.href='history.html'">
+      <span>📊 Insights</span>
+      <small>Open</small>
+    </div>
+    <div class="item" onclick="window.location.href='settings.html'">
+      <span>⚙️ Settings</span>
+      <small>Open</small>
+    </div>
+    <div class="item" onclick="window.location.href='group-inbox.html'">
+      <span>👥 Study Groups</span>
+      <small>Open</small>
+    </div>
+  </div>
+  <button class="back" onclick="window.location.href='index.html'">← Back</button>
+</div>
+
+<script src="env.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+  if(localStorage.getItem('calmMode')==='on'){
+    document.body.classList.add('calm');
+  }
+  try{ if(!firebase.apps.length){ firebase.initializeApp(window.__FIREBASE_CONFIG); } }catch(e){}
+</script>
+
+</body>
+</html>
