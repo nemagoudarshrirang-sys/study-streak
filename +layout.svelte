@@ -5,10 +5,13 @@
 	import { initDailyTracker } from '$lib/dailyTracker.js';
 	import SessionNotesOverlay from '$lib/SessionNotesOverlay.svelte';
 	import SessionEnergyOverlay from '$lib/SessionEnergyOverlay.svelte';
+	import { onMount } from 'svelte';
 
 	let { children } = $props();
-	initIntegrityTracking();
-	initDailyTracker();
+	onMount(() => {
+		initIntegrityTracking();
+		initDailyTracker();
+	});
 </script>
 
 <svelte:head>
